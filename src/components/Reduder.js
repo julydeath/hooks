@@ -1,10 +1,15 @@
 import { nanoid } from "nanoid";
-import React, { useReducer, useState } from "react";
+import React, { useReducer } from "react";
 
-const Reducer = ({ number }) => {
+const Reducer = () => {
   const initialState = {
     input: "",
-    names: [],
+    names: [
+      {
+        id: "",
+        task: "",
+      },
+    ],
   };
 
   const reducer = (state, action) => {
@@ -16,13 +21,22 @@ const Reducer = ({ number }) => {
           ...state,
           input: action.payload,
         };
+      case "DELETE":
+        return {
+          ...state,
+          names: state.names.filter((li) => li.id !== action.payload),
+        };
       default:
         return state;
     }
   };
 
   const handleClick = () => {
-    dispatch({ type: "ADD", payload: state.input });
+    dispatch({ type: "ADD", payload: { id: nanoid(), task: state.input } });
+  };
+
+  const handleDelete = (id) => {
+    dispatch({ type: "DELETE", payload: id });
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -38,14 +52,14 @@ const Reducer = ({ number }) => {
           }
         />
       </div>
-      {state.names.map((li, index) => (
-        <div key={index}>
-          <li>{li}</li>
-          {/* <button onClick={() => handleDelete(li.id)}>Del</button> */}
+      {state.names.map((li) => (
+        <div key={li.id}>
+          <li>
+            {li.task} <button onClick={() => handleDelete(li.id)}>Del</button>
+          </li>
         </div>
       ))}
       <button onClick={() => handleClick()}>add</button>
-      {state.input}
     </div>
   );
 };
